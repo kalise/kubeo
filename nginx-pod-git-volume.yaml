@@ -1,22 +1,33 @@
+# Example of using an InitContainer in place of a GitRepo volume.
+# Unilke GitRepo volumes, this approach runs the git command in a container
 apiVersion: v1
 kind: Pod
 metadata:
   name: kubeo
   namespace:
   labels:
+    run: kubeo
 spec:
+  initContainers:
+    # This container clones the desired git repo to the EmptyDir volume.
+    - name: git-clone
+      image: alpine/git
+      args:
+        - clone
+        - --single-branch
+        - --
+        - https://github.com/kalise/kubeo-website.git
+        - /repo
+      volumeMounts:
+        - name: content-data
+          mountPath: /repo
   containers:
-  - name: nginx
-    image: nginx:latest
-    ports:
-    - containerPort: 80
-    volumeMounts:
-      - name: html
-        mountPath: /usr/share/nginx/html
-        readOnly: true
+    - name:  nginx
+      image: nginx:latest
+      volumeMounts:
+        - name: content-data
+          mountPath: /usr/share/nginx/html
   volumes:
-    - name: html
-      gitRepo:
-        repository: https://github.com/kalise/kubeo-website.git
-        revision: master
-        directory: .
+    - name: content-data
+      emptyDir: {}
+
