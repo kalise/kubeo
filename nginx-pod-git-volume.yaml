@@ -11,7 +11,7 @@ spec:
   initContainers:
     - name: git-clone
       image: alpine/git
-      args: ["clone", "--", "https://github.com/kalise/kubeo-website.git", "/repo"]
+      args: ["clone", "--", "https://github.com/kalise/kubeo.git", "/repo"]
       volumeMounts:
         - name: content-data
           mountPath: /repo
